@@ -10,33 +10,98 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as OrderIdRouteImport } from './routes/order.$id'
+import { Route as MenuTableTokenRouteImport } from './routes/menu.table.$token'
+import { Route as MenuTableTokenIndexRouteImport } from './routes/menu.table.$token.index'
+import { Route as MenuTableTokenCheckoutRouteImport } from './routes/menu.table.$token.checkout'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrderIdRoute = OrderIdRouteImport.update({
+  id: '/order/$id',
+  path: '/order/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MenuTableTokenRoute = MenuTableTokenRouteImport.update({
+  id: '/menu/table/$token',
+  path: '/menu/table/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MenuTableTokenIndexRoute = MenuTableTokenIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MenuTableTokenRoute,
+} as any)
+const MenuTableTokenCheckoutRoute = MenuTableTokenCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => MenuTableTokenRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/order/$id': typeof OrderIdRoute
+  '/menu/table/$token': typeof MenuTableTokenRouteWithChildren
+  '/menu/table/$token/checkout': typeof MenuTableTokenCheckoutRoute
+  '/menu/table/$token/': typeof MenuTableTokenIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/order/$id': typeof OrderIdRoute
+  '/menu/table/$token/checkout': typeof MenuTableTokenCheckoutRoute
+  '/menu/table/$token': typeof MenuTableTokenIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/order/$id': typeof OrderIdRoute
+  '/menu/table/$token': typeof MenuTableTokenRouteWithChildren
+  '/menu/table/$token/checkout': typeof MenuTableTokenCheckoutRoute
+  '/menu/table/$token/': typeof MenuTableTokenIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/order/$id'
+    | '/menu/table/$token'
+    | '/menu/table/$token/checkout'
+    | '/menu/table/$token/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/order/$id'
+    | '/menu/table/$token/checkout'
+    | '/menu/table/$token'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/order/$id'
+    | '/menu/table/$token'
+    | '/menu/table/$token/checkout'
+    | '/menu/table/$token/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LoginRoute: typeof LoginRoute
+  OrderIdRoute: typeof OrderIdRoute
+  MenuTableTokenRoute: typeof MenuTableTokenRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +113,64 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/order/$id': {
+      id: '/order/$id'
+      path: '/order/$id'
+      fullPath: '/order/$id'
+      preLoaderRoute: typeof OrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/menu/table/$token': {
+      id: '/menu/table/$token'
+      path: '/menu/table/$token'
+      fullPath: '/menu/table/$token'
+      preLoaderRoute: typeof MenuTableTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/menu/table/$token/': {
+      id: '/menu/table/$token/'
+      path: '/'
+      fullPath: '/menu/table/$token/'
+      preLoaderRoute: typeof MenuTableTokenIndexRouteImport
+      parentRoute: typeof MenuTableTokenRoute
+    }
+    '/menu/table/$token/checkout': {
+      id: '/menu/table/$token/checkout'
+      path: '/checkout'
+      fullPath: '/menu/table/$token/checkout'
+      preLoaderRoute: typeof MenuTableTokenCheckoutRouteImport
+      parentRoute: typeof MenuTableTokenRoute
+    }
   }
 }
 
+interface MenuTableTokenRouteChildren {
+  MenuTableTokenCheckoutRoute: typeof MenuTableTokenCheckoutRoute
+  MenuTableTokenIndexRoute: typeof MenuTableTokenIndexRoute
+}
+
+const MenuTableTokenRouteChildren: MenuTableTokenRouteChildren = {
+  MenuTableTokenCheckoutRoute: MenuTableTokenCheckoutRoute,
+  MenuTableTokenIndexRoute: MenuTableTokenIndexRoute,
+}
+
+const MenuTableTokenRouteWithChildren = MenuTableTokenRoute._addFileChildren(
+  MenuTableTokenRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LoginRoute: LoginRoute,
+  OrderIdRoute: OrderIdRoute,
+  MenuTableTokenRoute: MenuTableTokenRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
