@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrderIdRouteImport } from './routes/order.$id'
 import { Route as MenuTableTokenRouteImport } from './routes/menu.table.$token'
 import { Route as MenuTableTokenIndexRouteImport } from './routes/menu.table.$token.index'
@@ -18,6 +19,11 @@ import { Route as MenuTableTokenCheckoutRouteImport } from './routes/menu.table.
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrderIdRoute = OrderIdRouteImport.update({
@@ -43,6 +49,7 @@ const MenuTableTokenCheckoutRoute = MenuTableTokenCheckoutRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/order/$id': typeof OrderIdRoute
   '/menu/table/$token': typeof MenuTableTokenRouteWithChildren
   '/menu/table/$token/checkout': typeof MenuTableTokenCheckoutRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/order/$id': typeof OrderIdRoute
   '/menu/table/$token/checkout': typeof MenuTableTokenCheckoutRoute
   '/menu/table/$token': typeof MenuTableTokenIndexRoute
@@ -57,6 +65,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
   '/order/$id': typeof OrderIdRoute
   '/menu/table/$token': typeof MenuTableTokenRouteWithChildren
   '/menu/table/$token/checkout': typeof MenuTableTokenCheckoutRoute
@@ -66,15 +75,22 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
     | '/order/$id'
     | '/menu/table/$token'
     | '/menu/table/$token/checkout'
     | '/menu/table/$token/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/order/$id' | '/menu/table/$token/checkout' | '/menu/table/$token'
+  to:
+    | '/'
+    | '/login'
+    | '/order/$id'
+    | '/menu/table/$token/checkout'
+    | '/menu/table/$token'
   id:
     | '__root__'
     | '/'
+    | '/login'
     | '/order/$id'
     | '/menu/table/$token'
     | '/menu/table/$token/checkout'
@@ -83,6 +99,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LoginRoute: typeof LoginRoute
   OrderIdRoute: typeof OrderIdRoute
   MenuTableTokenRoute: typeof MenuTableTokenRouteWithChildren
 }
@@ -94,6 +111,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/order/$id': {
@@ -143,6 +167,7 @@ const MenuTableTokenRouteWithChildren = MenuTableTokenRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LoginRoute: LoginRoute,
   OrderIdRoute: OrderIdRoute,
   MenuTableTokenRoute: MenuTableTokenRouteWithChildren,
 }
