@@ -10,8 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as OrderIdRouteImport } from './routes/order.$id'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as MenuTableTokenRouteImport } from './routes/menu.table.$token'
 import { Route as MenuTableTokenIndexRouteImport } from './routes/menu.table.$token.index'
 import { Route as MenuTableTokenCheckoutRouteImport } from './routes/menu.table.$token.checkout'
@@ -21,15 +24,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const OrderIdRoute = OrderIdRouteImport.update({
   id: '/order/$id',
   path: '/order/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const MenuTableTokenRoute = MenuTableTokenRouteImport.update({
   id: '/menu/table/$token',
@@ -50,8 +67,10 @@ const MenuTableTokenCheckoutRoute = MenuTableTokenCheckoutRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/order/$id': typeof OrderIdRoute
   '/menu/table/$token': typeof MenuTableTokenRouteWithChildren
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/menu/table/$token/checkout': typeof MenuTableTokenCheckoutRoute
   '/menu/table/$token/': typeof MenuTableTokenIndexRoute
 }
@@ -59,15 +78,19 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/order/$id': typeof OrderIdRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/menu/table/$token/checkout': typeof MenuTableTokenCheckoutRoute
   '/menu/table/$token': typeof MenuTableTokenIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/order/$id': typeof OrderIdRoute
   '/menu/table/$token': typeof MenuTableTokenRouteWithChildren
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/menu/table/$token/checkout': typeof MenuTableTokenCheckoutRoute
   '/menu/table/$token/': typeof MenuTableTokenIndexRoute
 }
@@ -76,8 +99,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/admin'
     | '/order/$id'
     | '/menu/table/$token'
+    | '/admin/'
     | '/menu/table/$token/checkout'
     | '/menu/table/$token/'
   fileRoutesByTo: FileRoutesByTo
@@ -85,20 +110,25 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/order/$id'
+    | '/admin'
     | '/menu/table/$token/checkout'
     | '/menu/table/$token'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/login'
+    | '/_authenticated/admin'
     | '/order/$id'
     | '/menu/table/$token'
+    | '/_authenticated/admin/'
     | '/menu/table/$token/checkout'
     | '/menu/table/$token/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
   OrderIdRoute: typeof OrderIdRoute
   MenuTableTokenRoute: typeof MenuTableTokenRouteWithChildren
@@ -113,6 +143,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -120,12 +157,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/order/$id': {
       id: '/order/$id'
       path: '/order/$id'
       fullPath: '/order/$id'
       preLoaderRoute: typeof OrderIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/menu/table/$token': {
       id: '/menu/table/$token'
@@ -151,6 +202,28 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 interface MenuTableTokenRouteChildren {
   MenuTableTokenCheckoutRoute: typeof MenuTableTokenCheckoutRoute
   MenuTableTokenIndexRoute: typeof MenuTableTokenIndexRoute
@@ -167,6 +240,7 @@ const MenuTableTokenRouteWithChildren = MenuTableTokenRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   LoginRoute: LoginRoute,
   OrderIdRoute: OrderIdRoute,
   MenuTableTokenRoute: MenuTableTokenRouteWithChildren,
@@ -174,3 +248,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
