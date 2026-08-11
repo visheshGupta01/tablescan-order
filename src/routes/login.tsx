@@ -33,7 +33,7 @@ function LoginPage() {
     setBusy(true);
     try {
       await authService.signIn(email.trim(), password);
-      navigate({ to: "/" });
+      navigate({ to: "/admin/dashboard" });
     } catch {
       toast.error("Invalid email or password.");
     } finally {
