@@ -238,33 +238,3 @@ export async function recordEvent(payload: {
   });
   return { ok: true };
 }
-
-export type PaymentIntentResult =
-  | { ok: true; total: number }
-  | { ok: false; reason: "not_found" | "failed" };
-
-export async function markOrderPaidOnline(
-  orderId: string,
-  sessionId: string,
-): Promise<PaymentIntentResult> {
-  const db = await admin();
-  const { data: order } = await db
-    .from("orders")
-    .select("id, total, session_id, payment_status")
-    .eq("id", orderId)
-    .maybeSingle();
-
-  if (!order || order.session_id !== sessionId) return { ok: false, reason: "not_found" };
-
-  const { error } = await db
-    .from("orders")
-    .update({
-      payment_status: "PAID",
-      payment_method: "ONLINE",
-      paid_at: new Date().toISOString(),
-    })
-    .eq("id", orderId);
-
-  if (error) return { ok: false, reason: "failed" };
-  return { ok: true, total: Number(order.total) };
-}
