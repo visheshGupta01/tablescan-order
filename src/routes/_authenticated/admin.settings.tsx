@@ -47,6 +47,9 @@ function SettingsPage() {
   const [form, setForm] = useState<Record<string, string>>({});
   const [hours, setHours] = useState<OpeningHours>({});
   const [active, setActive] = useState(true);
+  const [taxRate, setTaxRate] = useState("0");
+  const [taxLabel, setTaxLabel] = useState("GST");
+  const [tipsEnabled, setTipsEnabled] = useState(true);
 
   useEffect(() => {
     if (!restaurant) return;
@@ -55,6 +58,9 @@ function SettingsPage() {
     setForm(next);
     setHours(restaurant.opening_hours ?? {});
     setActive(restaurant.is_active);
+    setTaxRate(String(restaurant.tax_rate ?? 0));
+    setTaxLabel(restaurant.tax_label ?? "GST");
+    setTipsEnabled(restaurant.tips_enabled !== false);
   }, [restaurant]);
 
   const submit = () => {
@@ -62,7 +68,14 @@ function SettingsPage() {
     save.mutate(
       {
         id: restaurant.id,
-        patch: { ...form, opening_hours: hours, is_active: active },
+        patch: {
+          ...form,
+          opening_hours: hours,
+          is_active: active,
+          tax_rate: Math.max(0, Math.min(50, Number(taxRate) || 0)),
+          tax_label: taxLabel.trim() || "Tax",
+          tips_enabled: tipsEnabled,
+        },
       },
       {
         onSuccess: () => toast.success("Settings saved"),
@@ -114,6 +127,40 @@ function SettingsPage() {
           <label className="flex items-center gap-2 pt-2 text-sm">
             <Switch checked={active} onCheckedChange={setActive} />
             Menu is live for guests
+          </label>
+        </Card>
+
+        <Card className="space-y-3 p-4">
+          <h3 className="text-lg">Billing</h3>
+          <p className="text-sm text-muted-foreground">
+            Tax is applied to every order subtotal. Tips are optional for guests.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="tax_label">Tax label</Label>
+              <Input
+                id="tax_label"
+                value={taxLabel}
+                onChange={(e) => setTaxLabel(e.target.value)}
+                placeholder="GST"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="tax_rate">Tax rate (%)</Label>
+              <Input
+                id="tax_rate"
+                type="number"
+                min={0}
+                max={50}
+                step="0.5"
+                value={taxRate}
+                onChange={(e) => setTaxRate(e.target.value)}
+              />
+            </div>
+          </div>
+          <label className="flex items-center gap-2 pt-1 text-sm">
+            <Switch checked={tipsEnabled} onCheckedChange={setTipsEnabled} />
+            Offer tipping at checkout
           </label>
         </Card>
 
