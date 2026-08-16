@@ -1,5 +1,10 @@
 export function formatCurrency(value: number): string {
-  return `₹${Math.round(Number(value) || 0).toLocaleString("en-IN")}`;
+  const amount = Number(value) || 0;
+  const hasFraction = Math.abs(amount - Math.round(amount)) > 0.004;
+  return `₹${amount.toLocaleString("en-IN", {
+    minimumFractionDigits: hasFraction ? 2 : 0,
+    maximumFractionDigits: hasFraction ? 2 : 0,
+  })}`;
 }
 
 export function formatTime(iso: string): string {
