@@ -36,6 +36,9 @@ function mapOrder(row: AnyRecord, tableName?: string | null): Order {
       subtotal: Number(i.subtotal),
     })),
     subtotal: Number(row["subtotal"]),
+    tax_rate: Number(row["tax_rate"] ?? 0),
+    tax_amount: Number(row["tax_amount"] ?? 0),
+    tip_amount: Number(row["tip_amount"] ?? 0),
     total: Number(row["total"]),
     table_name: tableName ?? null,
   };
@@ -73,6 +76,7 @@ export interface CreateOrderInput {
   token: string;
   sessionId: string;
   note?: string | undefined;
+  tipAmount?: number | undefined;
   items: { menuItemId: string; quantity: number }[];
 }
 
@@ -134,13 +138,27 @@ export async function createOrderSecure(input: CreateOrderInput): Promise<Create
 
   const subtotal = Number(items.reduce((sum, i) => sum + i.subtotal, 0).toFixed(2));
 
+  const { data: settings } = await db
+    .from("restaurant")
+    .select("tax_rate")
+    .limit(1)
+    .maybeSingle();
+
+  const taxRate = Math.max(0, Math.min(50, Number(settings?.tax_rate ?? 0)));
+  const taxAmount = Number(((subtotal * taxRate) / 100).toFixed(2));
+  const tipAmount = Number(Math.max(0, Math.min(subtotal, Number(input.tipAmount ?? 0))).toFixed(2));
+  const total = Number((subtotal + taxAmount + tipAmount).toFixed(2));
+
   const { data: order, error } = await db
     .from("orders")
     .insert({
       table_id: table.id,
       items: items as unknown as never,
       subtotal,
-      total: subtotal,
+      tax_rate: taxRate,
+      tax_amount: taxAmount,
+      tip_amount: tipAmount,
+      total,
       customer_note: input.note?.slice(0, 300) || null,
       session_id: input.sessionId,
       status: "PENDING",
@@ -219,4 +237,34 @@ export async function recordEvent(payload: {
     session_id: payload.sessionId ?? null,
   });
   return { ok: true };
+}
+
+export type PaymentIntentResult =
+  | { ok: true; total: number }
+  | { ok: false; reason: "not_found" | "failed" };
+
+export async function markOrderPaidOnline(
+  orderId: string,
+  sessionId: string,
+): Promise<PaymentIntentResult> {
+  const db = await admin();
+  const { data: order } = await db
+    .from("orders")
+    .select("id, total, session_id, payment_status")
+    .eq("id", orderId)
+    .maybeSingle();
+
+  if (!order || order.session_id !== sessionId) return { ok: false, reason: "not_found" };
+
+  const { error } = await db
+    .from("orders")
+    .update({
+      payment_status: "PAID",
+      payment_method: "ONLINE",
+      paid_at: new Date().toISOString(),
+    })
+    .eq("id", orderId);
+
+  if (error) return { ok: false, reason: "failed" };
+  return { ok: true, total: Number(order.total) };
 }
