@@ -5,6 +5,7 @@ import { StatusTimeline } from "@/components/customer/StatusTimeline";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatTime } from "@/lib/format";
+import { PAYMENT_METHOD_LABEL } from "@/types";
 
 export const Route = createFileRoute("/order/$id")({
   head: () => ({
@@ -76,9 +77,32 @@ function OrderStatusPage() {
             </li>
           ))}
         </ul>
-        <div className="mt-3 flex items-center justify-between border-t border-border pt-3 text-sm font-semibold">
-          <span>Total</span>
-          <span>{formatCurrency(order.total)}</span>
+        <div className="mt-3 space-y-1.5 border-t border-border pt-3 text-sm">
+          <div className="flex items-center justify-between text-muted-foreground">
+            <span>Subtotal</span>
+            <span>{formatCurrency(order.subtotal)}</span>
+          </div>
+          {order.tax_amount > 0 && (
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span>Tax ({order.tax_rate}%)</span>
+              <span>{formatCurrency(order.tax_amount)}</span>
+            </div>
+          )}
+          {order.tip_amount > 0 && (
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span>Tip</span>
+              <span>{formatCurrency(order.tip_amount)}</span>
+            </div>
+          )}
+          <div className="flex items-center justify-between border-t border-border pt-2 text-base font-semibold">
+            <span>Total</span>
+            <span>{formatCurrency(order.total)}</span>
+          </div>
+          <p className="pt-1 text-xs text-muted-foreground">
+            {order.payment_status === "PAID"
+              ? `Paid${order.payment_method ? ` · ${PAYMENT_METHOD_LABEL[order.payment_method]}` : ""}`
+              : "Unpaid — settle at the counter after your meal."}
+          </p>
         </div>
         {order.customer_note ? (
           <p className="mt-4 rounded-md bg-secondary px-3 py-2 text-sm">

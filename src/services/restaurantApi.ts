@@ -1,5 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Category, MenuItem, Restaurant, RestaurantTable, Order } from "@/types";
+import type {
+  Category,
+  MenuItem,
+  PaymentMethod,
+  Restaurant,
+  RestaurantTable,
+  Order,
+} from "@/types";
 
 type AnyRecord = Record<string, unknown>;
 
@@ -120,6 +127,9 @@ function mapOrder(row: AnyRecord): Order {
   return {
     ...(row as unknown as Order),
     subtotal: num(row["subtotal"]),
+    tax_rate: num(row["tax_rate"]),
+    tax_amount: num(row["tax_amount"]),
+    tip_amount: num(row["tip_amount"]),
     total: num(row["total"]),
     items: ((row["items"] as Order["items"]) ?? []).map((i) => ({
       ...i,
@@ -142,6 +152,24 @@ export const orderService = {
   },
   async setStatus(id: string, status: Order["status"]) {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
+    if (error) throw error;
+  },
+  async markPaid(id: string, method: PaymentMethod) {
+    const { error } = await supabase
+      .from("orders")
+      .update({
+        payment_status: "PAID",
+        payment_method: method,
+        paid_at: new Date().toISOString(),
+      })
+      .eq("id", id);
+    if (error) throw error;
+  },
+  async markUnpaid(id: string) {
+    const { error } = await supabase
+      .from("orders")
+      .update({ payment_status: "UNPAID", payment_method: null, paid_at: null })
+      .eq("id", id);
     if (error) throw error;
   },
 };

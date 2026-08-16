@@ -8,7 +8,7 @@ import {
   tableService,
   type MenuItemInput,
 } from "@/services/restaurantApi";
-import type { Category, Order } from "@/types";
+import type { Category, Order, PaymentMethod } from "@/types";
 
 const KEYS = {
   categories: ["admin", "categories"] as const,
@@ -125,7 +125,16 @@ export function useOrderMutations() {
       orderService.setStatus(id, status),
     onSuccess: invalidate,
   });
-  return { setStatus };
+  const markPaid = useMutation({
+    mutationFn: ({ id, method }: { id: string; method: PaymentMethod }) =>
+      orderService.markPaid(id, method),
+    onSuccess: invalidate,
+  });
+  const markUnpaid = useMutation({
+    mutationFn: (id: string) => orderService.markUnpaid(id),
+    onSuccess: invalidate,
+  });
+  return { setStatus, markPaid, markUnpaid };
 }
 
 export function useRestaurantMutation() {
