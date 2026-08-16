@@ -7,6 +7,7 @@ const createOrderSchema = z.object({
   token: z.string().min(3).max(64),
   sessionId: z.string().min(1).max(64),
   note: z.string().max(300).optional(),
+  tipAmount: z.number().min(0).max(100000).optional(),
   items: z
     .array(z.object({ menuItemId: z.string().uuid(), quantity: z.number().int().min(1).max(50) }))
     .min(1)
