@@ -10,6 +10,7 @@ import { useCart } from "@/hooks/useCart";
 import { placeOrder } from "@/lib/public.functions";
 import { getSessionId, rememberOrder } from "@/lib/session";
 import { formatCurrency } from "@/lib/format";
+import { TIP_PRESETS } from "@/types";
 import { BrandProvider } from "@/components/customer/BrandProvider";
 import { CustomerMessage, MenuSkeleton } from "@/components/customer/MenuSkeleton";
 
@@ -36,6 +37,7 @@ function CheckoutPage() {
   const submit = useServerFn(placeOrder);
 
   const [note, setNote] = useState("");
+  const [tipPercent, setTipPercent] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const [placed, setPlaced] = useState<{ id: string; number: number } | null>(null);
 
@@ -56,6 +58,14 @@ function CheckoutPage() {
   const restaurant = data.restaurant!;
   const table = data.table!;
 
+  const taxRate = Math.max(0, Number(restaurant.tax_rate ?? 0));
+  const taxAmount = Number(((cart.subtotal * taxRate) / 100).toFixed(2));
+  const tipsEnabled = restaurant.tips_enabled !== false;
+  const tipAmount = tipsEnabled
+    ? Number(((cart.subtotal * tipPercent) / 100).toFixed(2))
+    : 0;
+  const total = Number((cart.subtotal + taxAmount + tipAmount).toFixed(2));
+
   const handlePlaceOrder = async () => {
     setSubmitting(true);
     try {
@@ -64,6 +74,7 @@ function CheckoutPage() {
           token,
           sessionId: getSessionId(),
           note: note.trim() || undefined,
+          tipAmount,
           items: cart.items.map((l) => ({ menuItemId: l.menuItemId, quantity: l.quantity })),
         },
       });
@@ -170,10 +181,49 @@ function CheckoutPage() {
               ))}
             </ul>
 
-            <div className="flex items-center justify-between border-t border-border py-3 text-sm font-semibold">
-              <span>Subtotal</span>
-              <span>{formatCurrency(cart.subtotal)}</span>
+            <div className="mt-1 space-y-1.5 border-t border-border pt-3 text-sm">
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span>Subtotal</span>
+                <span>{formatCurrency(cart.subtotal)}</span>
+              </div>
+              {taxRate > 0 && (
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span>
+                    {restaurant.tax_label || "Tax"} ({taxRate}%)
+                  </span>
+                  <span>{formatCurrency(taxAmount)}</span>
+                </div>
+              )}
+              {tipsEnabled && tipAmount > 0 && (
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span>Tip ({tipPercent}%)</span>
+                  <span>{formatCurrency(tipAmount)}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between border-t border-border pt-2 text-base font-semibold">
+                <span>Total</span>
+                <span>{formatCurrency(total)}</span>
+              </div>
             </div>
+
+            {tipsEnabled && (
+              <div className="mt-5 rounded-lg border border-border bg-card p-4">
+                <p className="text-sm font-medium">Add a tip for the team</p>
+                <p className="text-xs text-muted-foreground">Optional — 100% goes to our staff.</p>
+                <div className="mt-3 grid grid-cols-4 gap-2">
+                  {TIP_PRESETS.map((percent) => (
+                    <Button
+                      key={percent}
+                      type="button"
+                      variant={tipPercent === percent ? "default" : "outline"}
+                      onClick={() => setTipPercent(percent)}
+                    >
+                      {percent === 0 ? "None" : `${percent}%`}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="mt-4 space-y-2">
               <label htmlFor="note" className="text-sm font-medium">
@@ -195,7 +245,7 @@ function CheckoutPage() {
               disabled={submitting}
               onClick={() => void handlePlaceOrder()}
             >
-              {submitting ? "Placing order…" : `Place Order · ${formatCurrency(cart.subtotal)}`}
+              {submitting ? "Placing order…" : `Place Order · ${formatCurrency(total)}`}
             </Button>
             <p className="mt-3 text-center text-xs text-muted-foreground">
               No account needed. Pay at the counter after your meal.
