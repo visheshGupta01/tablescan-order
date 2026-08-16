@@ -142,10 +142,16 @@ export type Database = {
           id: string
           items: Json
           order_number: number
+          paid_at: string | null
+          payment_method: string | null
+          payment_status: string
           session_id: string | null
           status: string
           subtotal: number
           table_id: string | null
+          tax_amount: number
+          tax_rate: number
+          tip_amount: number
           total: number
           updated_at: string
         }
@@ -155,10 +161,16 @@ export type Database = {
           id?: string
           items?: Json
           order_number?: number
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_status?: string
           session_id?: string | null
           status?: string
           subtotal?: number
           table_id?: string | null
+          tax_amount?: number
+          tax_rate?: number
+          tip_amount?: number
           total?: number
           updated_at?: string
         }
@@ -168,10 +180,16 @@ export type Database = {
           id?: string
           items?: Json
           order_number?: number
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_status?: string
           session_id?: string | null
           status?: string
           subtotal?: number
           table_id?: string | null
+          tax_amount?: number
+          tax_rate?: number
+          tip_amount?: number
           total?: number
           updated_at?: string
         }
@@ -201,8 +219,11 @@ export type Database = {
           opening_hours: Json
           phone: string | null
           slug: string
+          tax_label: string
+          tax_rate: number
           template: string
           theme: Json
+          tips_enabled: boolean
           updated_at: string
           website_url: string | null
           whatsapp_number: string | null
@@ -222,8 +243,11 @@ export type Database = {
           opening_hours?: Json
           phone?: string | null
           slug?: string
+          tax_label?: string
+          tax_rate?: number
           template?: string
           theme?: Json
+          tips_enabled?: boolean
           updated_at?: string
           website_url?: string | null
           whatsapp_number?: string | null
@@ -243,8 +267,11 @@ export type Database = {
           opening_hours?: Json
           phone?: string | null
           slug?: string
+          tax_label?: string
+          tax_rate?: number
           template?: string
           theme?: Json
+          tips_enabled?: boolean
           updated_at?: string
           website_url?: string | null
           whatsapp_number?: string | null

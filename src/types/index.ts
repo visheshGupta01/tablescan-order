@@ -49,6 +49,19 @@ export interface Theme {
 
 export type MenuTemplate = "modern" | "elegant" | "minimal";
 
+export type PaymentStatus = "UNPAID" | "PAID";
+
+export type PaymentMethod = "CASH" | "CARD" | "UPI" | "ONLINE";
+
+export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
+  CASH: "Cash",
+  CARD: "Card",
+  UPI: "UPI",
+  ONLINE: "Paid online",
+};
+
+export const TIP_PRESETS = [0, 5, 10, 15] as const;
+
 export interface Restaurant {
   id: string;
   name: string;
@@ -67,6 +80,9 @@ export interface Restaurant {
   theme: Theme;
   template: string;
   is_active: boolean;
+  tax_rate: number;
+  tax_label: string;
+  tips_enabled: boolean;
 }
 
 export interface Category {
@@ -112,9 +128,15 @@ export interface Order {
   table_id: string | null;
   items: OrderItem[];
   subtotal: number;
+  tax_rate: number;
+  tax_amount: number;
+  tip_amount: number;
   total: number;
   customer_note: string | null;
   status: OrderStatus;
+  payment_status: PaymentStatus;
+  payment_method: PaymentMethod | null;
+  paid_at: string | null;
   created_at: string;
   updated_at: string;
   table_name?: string | null;

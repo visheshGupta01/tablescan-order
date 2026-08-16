@@ -3,7 +3,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useOrderMutations, useOrders } from "@/hooks/useAdminData";
 import { formatCurrency, formatTime, timeAgo } from "@/lib/format";
-import { ORDER_FLOW, STAFF_STATUS_LABEL, type Order, type OrderStatus } from "@/types";
+import {
+  ORDER_FLOW,
+  PAYMENT_METHOD_LABEL,
+  STAFF_STATUS_LABEL,
+  type Order,
+  type OrderStatus,
+  type PaymentMethod,
+} from "@/types";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,7 +42,7 @@ function nextStatus(status: OrderStatus): OrderStatus | null {
 
 function OrdersPage() {
   const { data: orders = [], isLoading, isFetching } = useOrders(6000);
-  const { setStatus } = useOrderMutations();
+  const { setStatus, markPaid, markUnpaid } = useOrderMutations();
   const [showDone, setShowDone] = useState(false);
 
   const advance = (order: Order) => {
@@ -60,6 +67,28 @@ function OrdersPage() {
     );
   };
 
+  const settle = (order: Order, method: PaymentMethod) => {
+    markPaid.mutate(
+      { id: order.id, method },
+      {
+        onSuccess: () =>
+          toast.success(`Order #${order.order_number} marked paid (${PAYMENT_METHOD_LABEL[method]})`),
+        onError: () => toast.error("Could not record the payment."),
+      },
+    );
+  };
+
+  const unsettle = (order: Order) => {
+    markUnpaid.mutate(order.id, {
+      onSuccess: () => toast.success(`Order #${order.order_number} marked unpaid`),
+      onError: () => toast.error("Could not update the payment."),
+    });
+  };
+
+  const unpaidTotal = orders
+    .filter((o) => o.status !== "CANCELLED" && o.payment_status !== "PAID")
+    .reduce((sum, o) => sum + o.total, 0);
+
   const done = orders.filter((o) => o.status === "COMPLETED" || o.status === "CANCELLED");
 
   return (
@@ -69,6 +98,10 @@ function OrdersPage() {
           <h2 className="text-2xl">Live order board</h2>
           <p className="text-sm text-muted-foreground">
             Auto-refreshing every 6 seconds {isFetching && "· syncing…"}
+          </p>
+          <p className="mt-1 text-sm">
+            <span className="text-muted-foreground">Open bills: </span>
+            <span className="font-semibold">{formatCurrency(unpaidTotal)}</span>
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={() => setShowDone((v) => !v)}>
@@ -101,7 +134,9 @@ function OrdersPage() {
                       order={order}
                       onAdvance={() => advance(order)}
                       onCancel={() => cancel(order)}
-                      busy={setStatus.isPending}
+                      onSettle={(method) => settle(order, method)}
+                      onUnsettle={() => unsettle(order)}
+                      busy={setStatus.isPending || markPaid.isPending || markUnpaid.isPending}
                     />
                   ))}
                   {list.length === 0 && (
@@ -127,6 +162,11 @@ function OrdersPage() {
                   <Badge variant={o.status === "CANCELLED" ? "destructive" : "secondary"}>
                     {STAFF_STATUS_LABEL[o.status]}
                   </Badge>
+                  <Badge variant={o.payment_status === "PAID" ? "default" : "outline"}>
+                    {o.payment_status === "PAID"
+                      ? (o.payment_method ? PAYMENT_METHOD_LABEL[o.payment_method] : "Paid")
+                      : "Unpaid"}
+                  </Badge>
                   {formatCurrency(o.total)}
                 </span>
               </li>
@@ -141,15 +181,21 @@ function OrdersPage() {
   );
 }
 
+const SETTLE_METHODS: PaymentMethod[] = ["CASH", "CARD", "UPI"];
+
 function OrderCard({
   order,
   onAdvance,
   onCancel,
+  onSettle,
+  onUnsettle,
   busy,
 }: {
   order: Order;
   onAdvance: () => void;
   onCancel: () => void;
+  onSettle: (method: PaymentMethod) => void;
+  onUnsettle: () => void;
   busy: boolean;
 }) {
   const next = nextStatus(order.status);
@@ -162,7 +208,14 @@ function OrderCard({
             {order.table_name ?? "Unknown table"} · {timeAgo(order.created_at)}
           </p>
         </div>
-        <span className="text-sm font-semibold">{formatCurrency(order.total)}</span>
+        <div className="text-right">
+          <span className="text-sm font-semibold">{formatCurrency(order.total)}</span>
+          <p className="text-[11px] text-muted-foreground">
+            {order.payment_status === "PAID"
+              ? `Paid · ${order.payment_method ? PAYMENT_METHOD_LABEL[order.payment_method] : "—"}`
+              : "Unpaid"}
+          </p>
+        </div>
       </div>
 
       <ul className="mt-2 space-y-1 text-sm">
@@ -181,6 +234,48 @@ function OrderCard({
           “{order.customer_note}”
         </p>
       )}
+
+      <div className="mt-2 space-y-1 border-t border-border pt-2 text-xs text-muted-foreground">
+        <div className="flex justify-between">
+          <span>Subtotal</span>
+          <span>{formatCurrency(order.subtotal)}</span>
+        </div>
+        {order.tax_amount > 0 && (
+          <div className="flex justify-between">
+            <span>Tax ({order.tax_rate}%)</span>
+            <span>{formatCurrency(order.tax_amount)}</span>
+          </div>
+        )}
+        {order.tip_amount > 0 && (
+          <div className="flex justify-between">
+            <span>Tip</span>
+            <span>{formatCurrency(order.tip_amount)}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-1.5">
+        {order.payment_status === "PAID" ? (
+          <Button size="sm" variant="ghost" disabled={busy} onClick={onUnsettle}>
+            Mark unpaid
+          </Button>
+        ) : (
+          <>
+            <span className="text-xs text-muted-foreground">Settle:</span>
+            {SETTLE_METHODS.map((method) => (
+              <Button
+                key={method}
+                size="sm"
+                variant="secondary"
+                disabled={busy}
+                onClick={() => onSettle(method)}
+              >
+                {PAYMENT_METHOD_LABEL[method]}
+              </Button>
+            ))}
+          </>
+        )}
+      </div>
 
       <div className="mt-3 flex gap-2">
         {next && (
