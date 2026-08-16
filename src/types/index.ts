@@ -80,6 +80,9 @@ export interface Restaurant {
   theme: Theme;
   template: string;
   is_active: boolean;
+  tax_rate: number;
+  tax_label: string;
+  tips_enabled: boolean;
 }
 
 export interface Category {
