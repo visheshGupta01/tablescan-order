@@ -128,9 +128,15 @@ export interface Order {
   table_id: string | null;
   items: OrderItem[];
   subtotal: number;
+  tax_rate: number;
+  tax_amount: number;
+  tip_amount: number;
   total: number;
   customer_note: string | null;
   status: OrderStatus;
+  payment_status: PaymentStatus;
+  payment_method: PaymentMethod | null;
+  paid_at: string | null;
   created_at: string;
   updated_at: string;
   table_name?: string | null;
