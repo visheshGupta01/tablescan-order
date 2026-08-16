@@ -49,6 +49,19 @@ export interface Theme {
 
 export type MenuTemplate = "modern" | "elegant" | "minimal";
 
+export type PaymentStatus = "UNPAID" | "PAID";
+
+export type PaymentMethod = "CASH" | "CARD" | "UPI" | "ONLINE";
+
+export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
+  CASH: "Cash",
+  CARD: "Card",
+  UPI: "UPI",
+  ONLINE: "Paid online",
+};
+
+export const TIP_PRESETS = [0, 5, 10, 15] as const;
+
 export interface Restaurant {
   id: string;
   name: string;
