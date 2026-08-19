@@ -13,6 +13,7 @@ import { formatCurrency } from "@/lib/format";
 import { TIP_PRESETS } from "@/types";
 import { BrandProvider } from "@/components/customer/BrandProvider";
 import { CustomerMessage, MenuSkeleton } from "@/components/customer/MenuSkeleton";
+import { RazorpayButton } from "@/components/customer/RazorpayButton";
 
 export const Route = createFileRoute("/menu/table/$token/checkout")({
   head: () => ({
@@ -123,13 +124,20 @@ function CheckoutPage() {
             Your order has been received by the restaurant.
           </p>
           <div className="mt-8 space-y-2">
+            <RazorpayButton
+              orderId={placed.id}
+              amount={total}
+              className="h-12 w-full"
+              onPaid={() => navigate({ to: "/order/$id", params: { id: placed.id } })}
+            />
             <Button
+              variant="outline"
               className="w-full"
               onClick={() => navigate({ to: "/order/$id", params: { id: placed.id } })}
             >
-              View Order Status
+              Pay at counter · View Order Status
             </Button>
-            <Button variant="outline" className="w-full" asChild>
+            <Button variant="ghost" className="w-full" asChild>
               <Link to="/menu/table/$token" params={{ token }}>
                 Back to Menu
               </Link>
