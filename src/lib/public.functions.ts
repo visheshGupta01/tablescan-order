@@ -60,3 +60,26 @@ export const trackEvent = createServerFn({ method: "POST" })
     const { recordEvent } = await import("./public-menu.server");
     return recordEvent(data);
   });
+
+export const startOnlinePayment = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => z.object({ orderId: z.string().uuid() }).parse(data))
+  .handler(async ({ data }) => {
+    const { startRazorpayPayment } = await import("./razorpay.server");
+    return startRazorpayPayment(data.orderId);
+  });
+
+export const confirmOnlinePayment = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        orderId: z.string().uuid(),
+        razorpayOrderId: z.string().min(4).max(64),
+        razorpayPaymentId: z.string().min(4).max(64),
+        razorpaySignature: z.string().min(16).max(256),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { confirmRazorpayPayment } = await import("./razorpay.server");
+    return confirmRazorpayPayment(data);
+  });

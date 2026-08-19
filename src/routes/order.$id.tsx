@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { usePublicOrder } from "@/hooks/usePublicMenu";
 import { CustomerMessage } from "@/components/customer/MenuSkeleton";
 import { StatusTimeline } from "@/components/customer/StatusTimeline";
+import { RazorpayButton } from "@/components/customer/RazorpayButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatTime } from "@/lib/format";
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/order/$id")({
 
 function OrderStatusPage() {
   const { id } = Route.useParams();
-  const { data: order, isLoading } = usePublicOrder(id);
+  const { data: order, isLoading, refetch } = usePublicOrder(id);
 
   if (isLoading) {
     return (
@@ -112,7 +113,16 @@ function OrderStatusPage() {
         ) : null}
       </section>
 
-      <Button variant="outline" className="mt-6 w-full" asChild>
+      {order.payment_status !== "PAID" && order.status !== "CANCELLED" && (
+        <RazorpayButton
+          orderId={order.id}
+          amount={order.total}
+          className="mt-6 h-12 w-full"
+          onPaid={() => void refetch()}
+        />
+      )}
+
+      <Button variant="outline" className="mt-3 w-full" asChild>
         <Link to="/">Back to home</Link>
       </Button>
     </div>
