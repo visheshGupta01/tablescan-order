@@ -40,7 +40,7 @@ function CheckoutPage() {
   const [note, setNote] = useState("");
   const [tipPercent, setTipPercent] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
-  const [placed, setPlaced] = useState<{ id: string; number: number } | null>(null);
+  const [placed, setPlaced] = useState<{ id: string; number: number; total: number } | null>(null);
 
   if (isLoading || !data) return <MenuSkeleton />;
   if (data.status !== "ok") {
@@ -87,8 +87,8 @@ function CheckoutPage() {
           tableToken: token,
           createdAt: new Date().toISOString(),
         });
+        setPlaced({ id: result.orderId, number: result.orderNumber, total });
         cart.clear();
-        setPlaced({ id: result.orderId, number: result.orderNumber });
         return;
       }
 
@@ -126,7 +126,7 @@ function CheckoutPage() {
           <div className="mt-8 space-y-2">
             <RazorpayButton
               orderId={placed.id}
-              amount={total}
+              amount={placed.total}
               className="h-12 w-full"
               onPaid={() => navigate({ to: "/order/$id", params: { id: placed.id } })}
             />
