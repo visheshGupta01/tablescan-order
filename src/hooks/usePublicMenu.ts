@@ -5,8 +5,8 @@ import { getPublicMenu, getPublicOrder, getTableOrders, trackEvent } from "@/lib
 import { getSessionId } from "@/lib/session";
 
 export function usePublicMenu(token: string) {
-  console.log("usePublicMenu called with token", token);
   const fetchMenu = useServerFn(getPublicMenu);
+
   return useQuery({
     queryKey: ["public-menu", token],
     queryFn: () => fetchMenu({ data: { token } }),
