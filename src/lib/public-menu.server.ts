@@ -46,13 +46,17 @@ function mapOrder(row: AnyRecord, tableName?: string | null): Order {
 
 export async function loadPublicMenu(token: string): Promise<PublicMenuPayload> {
   const db = await admin();
+  console.log("Loading public menu for token", token);
   const empty = { restaurant: null, table: null, categories: [], items: [] };
+
+  console.log("Database",db)
 
   const { data: table } = await db
     .from("restaurant_tables")
     .select("id, name, qr_token, is_active")
     .eq("qr_token", token)
-    .maybeSingle();
+  
+  console.log("Table data:", table);
 
   if (!table) return { status: "invalid", ...empty };
   if (!table.is_active) return { status: "inactive", ...empty };

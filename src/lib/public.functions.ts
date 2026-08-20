@@ -17,6 +17,7 @@ const createOrderSchema = z.object({
 export const getPublicMenu = createServerFn({ method: "GET" })
   .inputValidator((data: unknown) => tokenSchema.parse(data))
   .handler(async ({ data }) => {
+    console.log("getPublicMenu called with token", data.token);
     const { loadPublicMenu } = await import("./public-menu.server");
     return loadPublicMenu(data.token);
   });
