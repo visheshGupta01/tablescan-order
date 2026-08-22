@@ -79,11 +79,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "The Brew House — Scan, Browse & Order at Your Table" },
+      { title: "The Coffee Dose — Scan, Browse & Order at Your Table" },
       {
         name: "description",
         content:
-          "Digital QR menu and table ordering for The Brew House. Scan your table code, browse the menu and order in seconds.",
+          "Digital QR table ordering for The Coffee Dose, Bidholi, Dehradun. Scan your table code, browse the menu and get your daily dose in seconds.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
