@@ -121,8 +121,19 @@ function MenuPage() {
 
   const countFor = (id: string) => cart.items.find((l) => l.menuItemId === id)?.quantity ?? 0;
 
-  const chooseDose = (term: string) => {
-    setQuery(term);
+  const chooseDose = (term: "coffee" | "food" | "drinks") => {
+    setQuery("");
+    const categoryQuery = term === "drinks" ? "beverage" : term;
+    const category = term === "food"
+      ? undefined
+      : data?.categories.find((item) => item.name.toLowerCase().includes(categoryQuery));
+    if (category) {
+      setActiveCategory(category.id);
+      track("category_view", { categoryId: category.id });
+      document.getElementById(`cat-${category.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    setActiveCategory("all");
     document.getElementById("full-menu")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -136,7 +147,7 @@ function MenuPage() {
         <section className="mx-auto max-w-lg px-5 pb-8 pt-8 sm:pt-12">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
-              <CafeLogo imageUrl={restaurant.logo} name={restaurant.name} className="size-11" />
+              <CafeLogo name="The Coffee Dose" className="size-11" />
               <div className="min-w-0">
                 <p className="dose-label truncate text-foreground">The Coffee Dose</p>
                 <p className="mt-1 text-xs text-muted-foreground">Bidholi · Dehradun</p>
@@ -151,15 +162,14 @@ function MenuPage() {
               YOUR DAILY<br />DOSE OF GOODNESS.
             </h1>
             <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
-              {restaurant.description || "Good coffee, good food, and a little more time together."}
+              Good coffee, good food, and a little more time together.
             </p>
           </div>
 
           <div className="mt-7 overflow-hidden rounded-xl border border-border">
             <ImagePlaceholder
-              imageUrl={restaurant.cover_image}
-              alt="The Coffee Dose café"
-              label="CAFE INTERIOR IMAGE"
+              alt="The Coffee Dose café interior photo placeholder"
+              label="CAFE INTERIOR IMAGE PLACEHOLDER"
               aspectRatio="16/10"
               rounded="rounded-xl"
               eager
