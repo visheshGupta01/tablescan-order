@@ -15,21 +15,26 @@ import { CustomerFooter } from "@/components/customer/CustomerFooter";
 import { CustomerMessage, MenuSkeleton } from "@/components/customer/MenuSkeleton";
 import { CUSTOMER_STATUS_LABEL, type MenuItem } from "@/types";
 import { formatCurrency } from "@/lib/format";
+import { Button } from "@/components/ui/button";
+import { CafeLogo, TableIndicator } from "@/components/cafe/CafeBrand";
+import { ImagePlaceholder } from "@/components/cafe/ImagePlaceholder";
+import { ArrowDown, Coffee, CupSoda, UtensilsCrossed } from "lucide-react";
 
 export const Route = createFileRoute("/menu/table/$token/")({
   head: () => ({
     meta: [
-      { title: "Menu & Table Ordering — The Brew House" },
+      { title: "Your First Dose — The Coffee Dose" },
       {
         name: "description",
-        content:
-          "Browse the full Brew House menu — coffee, brunch plates and desserts — and order straight from your table.",
+        content: "Explore The Coffee Dose menu and order directly from your table in Bidholi, Dehradun.",
       },
-      { property: "og:title", content: "Menu & Table Ordering — The Brew House" },
+      { property: "og:title", content: "Your First Dose — The Coffee Dose" },
       {
         property: "og:description",
-        content: "Scan, browse and order from your table at The Brew House.",
+        content: "Your table, your order, your dose of The Coffee Dose in Bidholi, Dehradun.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: MenuPage,
@@ -116,6 +121,11 @@ function MenuPage() {
 
   const countFor = (id: string) => cart.items.find((l) => l.menuItemId === id)?.quantity ?? 0;
 
+  const chooseDose = (term: string) => {
+    setQuery(term);
+    document.getElementById("full-menu")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const activeOrders = (orders.data ?? []).filter(
     (o) => o.status !== "COMPLETED" && o.status !== "CANCELLED",
   );
@@ -123,7 +133,96 @@ function MenuPage() {
   return (
     <BrandProvider theme={restaurant.theme} template={restaurant.template}>
       <div className="pb-24">
-        <RestaurantHero restaurant={restaurant} tableName={table.name} />
+        <section className="mx-auto max-w-lg px-5 pb-8 pt-8 sm:pt-12">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <CafeLogo imageUrl={restaurant.logo} name={restaurant.name} className="size-11" />
+              <div className="min-w-0">
+                <p className="dose-label truncate text-foreground">The Coffee Dose</p>
+                <p className="mt-1 text-xs text-muted-foreground">Bidholi · Dehradun</p>
+              </div>
+            </div>
+            <TableIndicator tableName={table.name} />
+          </div>
+
+          <div className="mt-9 animate-rise">
+            <p className="dose-label text-primary">FIRST DOSE</p>
+            <h1 className="editorial mt-3 text-5xl leading-[0.98] text-foreground sm:text-6xl">
+              YOUR DAILY<br />DOSE OF GOODNESS.
+            </h1>
+            <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
+              {restaurant.description || "Good coffee, good food, and a little more time together."}
+            </p>
+          </div>
+
+          <div className="mt-7 overflow-hidden rounded-xl border border-border">
+            <ImagePlaceholder
+              imageUrl={restaurant.cover_image}
+              alt="The Coffee Dose café"
+              label="CAFE INTERIOR IMAGE"
+              aspectRatio="16/10"
+              rounded="rounded-xl"
+              eager
+            />
+          </div>
+
+          <div className="mt-7">
+            <p className="dose-label text-muted-foreground">START HERE</p>
+            <h2 className="mt-2 font-display text-2xl text-foreground">What’s your dose?</h2>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => chooseDose("coffee")}
+                className="col-span-2 h-auto min-h-24 justify-between rounded-lg border-primary/30 bg-card p-4 text-left hover:bg-elevated"
+              >
+                <span className="flex items-center gap-4">
+                  <span className="grid size-12 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+                    <Coffee className="size-5" aria-hidden />
+                  </span>
+                  <span>
+                    <span className="dose-label block text-foreground">COFFEE</span>
+                    <span className="mt-1 block whitespace-normal text-sm font-normal text-muted-foreground">
+                      Start with a little ritual
+                    </span>
+                  </span>
+                </span>
+                <ArrowDown className="size-4 shrink-0 text-primary" aria-hidden />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => chooseDose("food")}
+                className="h-auto min-h-24 flex-col items-start justify-between rounded-lg border-border bg-card p-4 text-left hover:bg-elevated"
+              >
+                <UtensilsCrossed className="size-5 text-primary" aria-hidden />
+                <span>
+                  <span className="dose-label block text-foreground">FOOD</span>
+                  <span className="mt-1 block whitespace-normal text-xs font-normal text-muted-foreground">
+                    Find your favourite
+                  </span>
+                </span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => chooseDose("drinks")}
+                className="h-auto min-h-24 flex-col items-start justify-between rounded-lg border-border bg-card p-4 text-left hover:bg-elevated"
+              >
+                <CupSoda className="size-5 text-primary" aria-hidden />
+                <span>
+                  <span className="dose-label block text-foreground">DRINKS</span>
+                  <span className="mt-1 block whitespace-normal text-xs font-normal text-muted-foreground">
+                    Something refreshing
+                  </span>
+                </span>
+              </Button>
+            </div>
+            <Button asChild className="mt-4 h-12 w-full rounded-lg text-sm font-semibold">
+              <a href="#full-menu">VIEW FULL MENU</a>
+            </Button>
+          </div>
+        </section>
 
         {activeOrders.length > 0 ? (
           <div className="mx-auto mt-4 max-w-3xl px-4">
@@ -143,7 +242,7 @@ function MenuPage() {
           </div>
         ) : null}
 
-        <div className="mt-6">
+        <div id="full-menu" className="scroll-mt-20 mt-6">
           <MenuToolbar
             query={query}
             onQueryChange={setQuery}

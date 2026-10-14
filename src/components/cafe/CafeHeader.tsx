@@ -74,7 +74,7 @@ export function CafeHeader({
               <Menu className="size-4" />
             </button>
             <div className="flex min-w-0 flex-1 items-center justify-center gap-2">
-              <CafeLogo imageUrl={logo} name={name} className="size-8" />
+              <CafeLogo imageUrl={logo ?? null} name={name} className="size-8" />
               <span className="dose-label truncate text-foreground">{name}</span>
             </div>
             <button
