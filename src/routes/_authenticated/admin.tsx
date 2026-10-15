@@ -44,7 +44,7 @@ function AdminLayout() {
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-accent">
-              The Brew House
+              The Coffee Dose
             </p>
             <h1 className="text-lg leading-tight">Staff Console</h1>
           </div>
