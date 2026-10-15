@@ -10,9 +10,9 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/_authenticated/admin/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Brew House Staff Console" },
-      { name: "description", content: "Today's orders, revenue and live activity for The Brew House." },
-      { property: "og:title", content: "Dashboard — Brew House Staff Console" },
+      { title: "Dashboard — Coffee Dose Staff Console" },
+      { name: "description", content: "Today's orders, revenue and live activity for The Coffee Dose." },
+      { property: "og:title", content: "Dashboard — Coffee Dose Staff Console" },
       { property: "og:description", content: "Track sales, live orders and menu status." },
       { name: "robots", content: "noindex" },
     ],
