@@ -11,9 +11,9 @@ import { Switch } from "@/components/ui/switch";
 export const Route = createFileRoute("/_authenticated/admin/categories")({
   head: () => ({
     meta: [
-      { title: "Categories — Brew House Staff Console" },
+      { title: "Categories — Coffee Dose Staff Console" },
       { name: "description", content: "Create, rename, reorder and hide menu categories." },
-      { property: "og:title", content: "Categories — Brew House Staff Console" },
+      { property: "og:title", content: "Categories — Coffee Dose Staff Console" },
       { property: "og:description", content: "Organise the menu into sections." },
       { name: "robots", content: "noindex" },
     ],
