@@ -26,7 +26,7 @@ export function CafeLogo({
         className,
       )}
     >
-      cd
+      CD
     </span>
   );
 }

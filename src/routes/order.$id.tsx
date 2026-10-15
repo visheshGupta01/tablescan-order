@@ -11,12 +11,12 @@ import { PAYMENT_METHOD_LABEL } from "@/types";
 export const Route = createFileRoute("/order/$id")({
   head: () => ({
     meta: [
-      { title: "Track Your Order — The Brew House" },
+      { title: "Track Your Order — The Coffee Dose" },
       {
         name: "description",
-        content: "Live status for your Brew House table order, from received to ready.",
+        content: "Live status for your Coffee Dose table order, from received to ready.",
       },
-      { property: "og:title", content: "Track Your Order — The Brew House" },
+      { property: "og:title", content: "Track Your Order — The Coffee Dose" },
       { property: "og:description", content: "Follow your order status in real time." },
       { name: "robots", content: "noindex" },
     ],

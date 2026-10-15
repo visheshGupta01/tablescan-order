@@ -6,7 +6,7 @@
 
 /*
  * THE COFFEE DOSE — design system
- * Dark urban café · subtle glassmorphism · editorial typography · warm amber.
+ * Warm café surfaces · espresso ink · editorial typography · caramel and terracotta accents.
  *
  * Semantic tokens only. Never hardcode colors in components.
  */
@@ -71,70 +71,70 @@
   --radius: 1rem;
 
   /* Surfaces */
-  --background: #0d0d0d;
-  --surface: #141414;
-  --card: #1a1a1a;
-  --elevated: #222222;
-  --popover: #1a1a1a;
-  --secondary: #222222;
-  --muted: #1f1f1f;
+  --background: #F4EBDD;
+  --surface: #EDE1D0;
+  --card: #FFFAF2;
+  --elevated: #F8F0E6;
+  --popover: #FFFAF2;
+  --secondary: #EADBC8;
+  --muted: #EFE3D3;
 
   /* Type */
-  --foreground: #f5f1e8;
-  --card-foreground: #f5f1e8;
-  --popover-foreground: #f5f1e8;
-  --secondary-foreground: #f5f1e8;
-  --muted-foreground: #a7a7a7;
-  --subtle: #777777;
+  --foreground: #281812;
+  --card-foreground: #281812;
+  --popover-foreground: #281812;
+  --secondary-foreground: #281812;
+  --muted-foreground: #715B4E;
+  --subtle: #907A6B;
 
-  /* Brand */
-  --primary: #c9955a;
-  --primary-foreground: #17120c;
-  --accent: #c9955a;
-  --accent-foreground: #17120c;
-  --leaf: #68745b;
-  --leaf-foreground: #f5f1e8;
+  /* Coffee Dose palette from the brand concept PRD */
+  --primary: #C7844B;
+  --primary-foreground: #281812;
+  --accent: #C55E43;
+  --accent-foreground: #FFFAF2;
+  --leaf: #4A2B20;
+  --leaf-foreground: #F4EBDD;
 
   /* Feedback */
-  --destructive: #d8674f;
-  --destructive-foreground: #17120c;
-  --success: #7f9a6b;
-  --success-foreground: #10140d;
-  --warning: #d9a441;
+  --destructive: #B84D38;
+  --destructive-foreground: #FFFAF2;
+  --success: #47744B;
+  --success-foreground: #FFFAF2;
+  --warning: #986321;
 
   /* Lines */
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.12);
-  --ring: #c9955a;
+  --border: rgba(40, 24, 18, 0.14);
+  --input: rgba(40, 24, 18, 0.20);
+  --ring: #C7844B;
 
-  --glass: rgba(255, 255, 255, 0.06);
-  --glass-strong: rgba(20, 20, 20, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --shadow-glass: 0 18px 50px -18px rgba(0, 0, 0, 0.85);
-  --shadow-lift: 0 12px 32px -12px rgba(0, 0, 0, 0.7);
+  --glass: rgba(255, 250, 242, 0.82);
+  --glass-strong: rgba(244, 235, 221, 0.96);
+  --glass-border: rgba(40, 24, 18, 0.12);
+  --shadow-glass: 0 18px 50px -18px rgba(40, 24, 18, 0.18);
+  --shadow-lift: 0 12px 32px -12px rgba(40, 24, 18, 0.20);
 
   --font-display: "Playfair Display", ui-serif, Georgia, serif;
   --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
 
-  --chart-1: #c9955a;
-  --chart-2: #68745b;
-  --chart-3: #a7a7a7;
-  --chart-4: #d9a441;
-  --chart-5: #7f6247;
+  --chart-1: #C7844B;
+  --chart-2: #C55E43;
+  --chart-3: #4A2B20;
+  --chart-4: #D9A66F;
+  --chart-5: #8F5134;
 
-  --sidebar: #141414;
-  --sidebar-foreground: #f5f1e8;
-  --sidebar-primary: #c9955a;
-  --sidebar-primary-foreground: #17120c;
-  --sidebar-accent: #222222;
-  --sidebar-accent-foreground: #f5f1e8;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #c9955a;
+  --sidebar: #EDE1D0;
+  --sidebar-foreground: #281812;
+  --sidebar-primary: #C7844B;
+  --sidebar-primary-foreground: #281812;
+  --sidebar-accent: #EADBC8;
+  --sidebar-accent-foreground: #281812;
+  --sidebar-border: rgba(40, 24, 18, 0.14);
+  --sidebar-ring: #C7844B;
 }
 
 .dark {
-  /* The product is dark by default; .dark keeps parity. */
-  color-scheme: dark;
+  /* Coffee Dose uses the warm light palette across customer and staff screens. */
+  color-scheme: light;
 }
 
 @layer base {
@@ -143,7 +143,7 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
     background-color: var(--color-background);
   }
 
@@ -177,7 +177,7 @@
   }
 }
 
-/* Dark glassmorphism — for floating UI only, never for every card. */
+/* Soft café glass — reserved for floating UI, never for every card. */
 @utility glass {
   background: var(--glass);
   border: 1px solid var(--glass-border);

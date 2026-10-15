@@ -8,9 +8,9 @@ import { Card } from "@/components/ui/card";
 export const Route = createFileRoute("/_authenticated/admin/analytics")({
   head: () => ({
     meta: [
-      { title: "Analytics — Brew House Staff Console" },
+      { title: "Analytics — Coffee Dose Staff Console" },
       { name: "description", content: "Menu views, top-selling items and revenue by table." },
-      { property: "og:title", content: "Analytics — Brew House Staff Console" },
+      { property: "og:title", content: "Analytics — Coffee Dose Staff Console" },
       { property: "og:description", content: "See what guests scan, view and order most." },
       { name: "robots", content: "noindex" },
     ],

@@ -19,12 +19,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const Route = createFileRoute("/_authenticated/admin/orders")({
   head: () => ({
     meta: [
-      { title: "Live Order Board — Brew House Staff Console" },
+      { title: "Live Order Board — Coffee Dose Staff Console" },
       {
         name: "description",
-        content: "Real-time kitchen board for table orders at The Brew House.",
+        content: "Real-time kitchen board for table orders at The Coffee Dose.",
       },
-      { property: "og:title", content: "Live Order Board — Brew House Staff Console" },
+      { property: "og:title", content: "Live Order Board — Coffee Dose Staff Console" },
       { property: "og:description", content: "Move orders from new to ready in one tap." },
       { name: "robots", content: "noindex" },
     ],

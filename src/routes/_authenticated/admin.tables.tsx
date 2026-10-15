@@ -13,12 +13,12 @@ import { Switch } from "@/components/ui/switch";
 export const Route = createFileRoute("/_authenticated/admin/tables")({
   head: () => ({
     meta: [
-      { title: "Tables & QR Codes — Brew House Staff Console" },
+      { title: "Tables & QR Codes — Coffee Dose Staff Console" },
       {
         name: "description",
         content: "Create tables and download printable QR codes that open the menu.",
       },
-      { property: "og:title", content: "Tables & QR Codes — Brew House Staff Console" },
+      { property: "og:title", content: "Tables & QR Codes — Coffee Dose Staff Console" },
       { property: "og:description", content: "Each table gets its own secure QR link." },
       { name: "robots", content: "noindex" },
     ],

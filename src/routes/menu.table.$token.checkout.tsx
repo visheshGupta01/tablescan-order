@@ -18,13 +18,13 @@ import { RazorpayButton } from "@/components/customer/RazorpayButton";
 export const Route = createFileRoute("/menu/table/$token/checkout")({
   head: () => ({
     meta: [
-      { title: "Review & Place Your Order — The Brew House" },
+      { title: "Review & Place Your Order — The Coffee Dose" },
       {
         name: "description",
         content: "Review your table order, add special instructions and send it to the kitchen.",
       },
-      { property: "og:title", content: "Review & Place Your Order — The Brew House" },
-      { property: "og:description", content: "Confirm your table order at The Brew House." },
+      { property: "og:title", content: "Review & Place Your Order — The Coffee Dose" },
+      { property: "og:description", content: "Confirm your table order at The Coffee Dose." },
     ],
   }),
   component: CheckoutPage,
