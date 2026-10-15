@@ -14,12 +14,12 @@ import { Switch } from "@/components/ui/switch";
 export const Route = createFileRoute("/_authenticated/admin/settings")({
   head: () => ({
     meta: [
-      { title: "Restaurant Settings — Brew House Staff Console" },
+      { title: "Restaurant Settings — Coffee Dose Staff Console" },
       {
         name: "description",
         content: "Update branding, contact details and opening hours for the QR menu.",
       },
-      { property: "og:title", content: "Restaurant Settings — Brew House Staff Console" },
+      { property: "og:title", content: "Restaurant Settings — Coffee Dose Staff Console" },
       { property: "og:description", content: "Control how the guest-facing menu looks." },
       { name: "robots", content: "noindex" },
     ],
