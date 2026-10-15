@@ -16,16 +16,16 @@ const DEMO_TABLES = [
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "The Brew House — QR Menu & Table Ordering" },
+      { title: "The Coffee Dose | Cafe in Bidholi, Dehradun" },
       {
         name: "description",
         content:
           "Specialty coffee, brunch and desserts. Scan the QR code on your table to browse the menu and order in seconds.",
       },
-      { property: "og:title", content: "The Brew House — QR Menu & Table Ordering" },
+      { property: "og:title", content: "The Coffee Dose | Cafe in Bidholi, Dehradun" },
       {
         property: "og:description",
-        content: "Scan your table QR code to browse the menu and order without waiting.",
+        content: "Your daily dose of good. Explore coffee, cold drinks and cafe food at The Coffee Dose in Bidholi.",
       },
       {
         property: "og:image",
@@ -55,19 +55,19 @@ function Home() {
       <section className="relative h-[70vh] min-h-[420px] w-full overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1600&q=80"
-          alt="Guests at The Brew House café"
+          alt="A warm cafe setting with natural textures and coffeehouse atmosphere"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-foreground/50" />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">
-            Scan · Browse · Order
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-background">
+            COFFEE, CRAVINGS & CATCH-UPS
           </p>
-          <h1 className="mt-4 max-w-2xl text-4xl text-primary-foreground sm:text-6xl">
-            {restaurant?.name ?? "THE BREW HOUSE"}
+          <h1 className="mt-4 max-w-2xl font-display text-4xl font-semibold tracking-tight text-background sm:text-6xl">
+            THE COFFEE DOSE
           </h1>
           <p className="mt-3 max-w-md text-sm text-primary-foreground/85">
-            {restaurant?.description ?? "Specialty Coffee • Brunch • Desserts"}
+            {restaurant?.description ?? "Coffee, cravings and catch-ups in Bidholi."}
           </p>
         </div>
       </section>
