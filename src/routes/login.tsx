@@ -9,13 +9,13 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Staff Login — The Coffee Dose" },
+      { title: "Staff Login — TableScan" },
       {
         name: "description",
-        content: "Sign in to manage The Coffee Dose menu, tables, QR codes and live orders.",
+        content: "Sign in to manage TableScan menu, tables, QR codes and live orders.",
       },
-      { property: "og:title", content: "Staff Login — The Coffee Dose" },
-      { property: "og:description", content: "Restaurant staff access for The Coffee Dose." },
+      { property: "og:title", content: "Staff Login — TableScan" },
+      { property: "og:description", content: "Restaurant staff access for TableScan." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -48,7 +48,7 @@ function LoginPage() {
         className="w-full max-w-sm rounded-lg border border-border bg-card p-6 shadow-sm"
       >
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
-          The Coffee Dose
+          TableScan
         </p>
         <h1 className="mt-2 text-2xl">Staff Login</h1>
         <div className="mt-6 space-y-4">
