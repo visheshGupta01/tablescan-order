@@ -74,11 +74,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "The Coffee Dose — Scan, Browse & Order at Your Table" },
+      { title: "TableScan — Scan, Browse & Order at Your Table" },
       {
         name: "description",
         content:
-          "Digital QR table ordering for The Coffee Dose, Bidholi, Dehradun. Scan your table code, browse the menu and get your daily dose in seconds.",
+          "Digital QR table ordering. Scan your table code, browse the live menu and place an order.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -91,7 +91,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..600&family=Manrope:wght@400;500;600;700;800&display=swap",
       },
-      { rel: "icon", href: "/coffee-dose-mark.svg", type: "image/svg+xml" },
+      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
   shellComponent: RootShell,
