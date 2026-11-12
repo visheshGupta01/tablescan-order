@@ -14,12 +14,12 @@ import { Switch } from "@/components/ui/switch";
 export const Route = createFileRoute("/_authenticated/admin/settings")({
   head: () => ({
     meta: [
-      { title: "Restaurant Settings — Coffee Dose Staff Console" },
+      { title: "Restaurant Settings — Staff Console" },
       {
         name: "description",
         content: "Update branding, contact details and opening hours for the QR menu.",
       },
-      { property: "og:title", content: "Restaurant Settings — Coffee Dose Staff Console" },
+      { property: "og:title", content: "Restaurant Settings — Staff Console" },
       { property: "og:description", content: "Control how the guest-facing menu looks." },
       { name: "robots", content: "noindex" },
     ],
@@ -142,7 +142,7 @@ function SettingsPage() {
                 id="tax_label"
                 value={taxLabel}
                 onChange={(e) => setTaxLabel(e.target.value)}
-                placeholder="GST"
+                placeholder="Tax"
               />
             </div>
             <div className="space-y-1.5">
