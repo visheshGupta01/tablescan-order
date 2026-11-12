@@ -8,16 +8,18 @@ const createOrderSchema = z.object({
   sessionId: z.string().min(1).max(64),
   note: z.string().max(300).optional(),
   tipAmount: z.number().min(0).max(100000).optional(),
-  items: z
-    .array(z.object({ menuItemId: z.string().uuid(), quantity: z.number().int().min(1).max(50) }))
-    .min(1)
-    .max(50),
+  items: z.array(z.object({ menuItemId: z.string().uuid(), quantity: z.number().int().min(1).max(50) })).min(1).max(50),
 });
+
+export const getPublicRestaurant = createServerFn({ method: "GET" })
+  .handler(async () => {
+    const { loadPublicRestaurant } = await import("./public-menu.server");
+    return loadPublicRestaurant();
+  });
 
 export const getPublicMenu = createServerFn({ method: "GET" })
   .inputValidator((data: unknown) => tokenSchema.parse(data))
   .handler(async ({ data }) => {
-    console.log("getPublicMenu called with token", data.token);
     const { loadPublicMenu } = await import("./public-menu.server");
     return loadPublicMenu(data.token);
   });
@@ -37,26 +39,20 @@ export const getPublicOrder = createServerFn({ method: "GET" })
   });
 
 export const getTableOrders = createServerFn({ method: "GET" })
-  .inputValidator((data: unknown) =>
-    z.object({ token: z.string().min(3).max(64), sessionId: z.string().min(1).max(64) }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ token: z.string().min(3).max(64), sessionId: z.string().min(1).max(64) }).parse(data))
   .handler(async ({ data }) => {
     const { loadTableOrders } = await import("./public-menu.server");
     return loadTableOrders(data.token, data.sessionId);
   });
 
 export const trackEvent = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) =>
-    z
-      .object({
-        eventType: z.string().min(1).max(40),
-        token: z.string().max(64).optional(),
-        itemId: z.string().uuid().optional(),
-        categoryId: z.string().uuid().optional(),
-        sessionId: z.string().max(64).optional(),
-      })
-      .parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({
+    eventType: z.string().min(1).max(40),
+    token: z.string().max(64).optional(),
+    itemId: z.string().uuid().optional(),
+    categoryId: z.string().uuid().optional(),
+    sessionId: z.string().max(64).optional(),
+  }).parse(data))
   .handler(async ({ data }) => {
     const { recordEvent } = await import("./public-menu.server");
     return recordEvent(data);
@@ -70,16 +66,12 @@ export const startOnlinePayment = createServerFn({ method: "POST" })
   });
 
 export const confirmOnlinePayment = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) =>
-    z
-      .object({
-        orderId: z.string().uuid(),
-        razorpayOrderId: z.string().min(4).max(64),
-        razorpayPaymentId: z.string().min(4).max(64),
-        razorpaySignature: z.string().min(16).max(256),
-      })
-      .parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({
+    orderId: z.string().uuid(),
+    razorpayOrderId: z.string().min(4).max(64),
+    razorpayPaymentId: z.string().min(4).max(64),
+    razorpaySignature: z.string().min(16).max(256),
+  }).parse(data))
   .handler(async ({ data }) => {
     const { confirmRazorpayPayment } = await import("./razorpay.server");
     return confirmRazorpayPayment(data);

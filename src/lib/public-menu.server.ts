@@ -44,19 +44,30 @@ function mapOrder(row: AnyRecord, tableName?: string | null): Order {
   };
 }
 
+export async function loadPublicRestaurant(): Promise<Restaurant | null> {
+  const db = await admin();
+  const { data, error } = await db
+    .from("restaurant")
+    .select("*")
+    .eq("is_active", true)
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return mapRestaurant(data as AnyRecord | null);
+}
+
 export async function loadPublicMenu(token: string): Promise<PublicMenuPayload> {
   const db = await admin();
   const empty = { restaurant: null, table: null, categories: [], items: [] };
 
-  const { data: table } = await db
+  const { data: table, error: tableError } = await db
     .from("restaurant_tables")
     .select("id, name, qr_token, is_active")
     .eq("qr_token", token)
     .maybeSingle();
-
+  if (tableError) throw tableError;
   if (!table) return { status: "invalid", ...empty };
   if (!table.is_active) return { status: "inactive", ...empty };
-
 
   const [restaurantRes, categoriesRes, itemsRes] = await Promise.all([
     db.from("restaurant").select("*").limit(1).maybeSingle(),
@@ -64,11 +75,17 @@ export async function loadPublicMenu(token: string): Promise<PublicMenuPayload> 
     db.from("menu_items").select("*").order("display_order"),
   ]);
 
+  if (restaurantRes.error) throw restaurantRes.error;
+  if (categoriesRes.error) throw categoriesRes.error;
+  if (itemsRes.error) throw itemsRes.error;
+  if (!restaurantRes.data) return { status: "unconfigured", ...empty };
+  if (!restaurantRes.data.is_active) return { status: "inactive_restaurant", ...empty };
+
   return {
     status: "ok",
-    restaurant: mapRestaurant(restaurantRes.data as AnyRecord | null),
+    restaurant: mapRestaurant(restaurantRes.data as AnyRecord),
     table: { id: table.id, name: table.name, qr_token: table.qr_token },
-    categories: ((categoriesRes.data ?? []) as AnyRecord[]) as unknown as Category[],
+    categories: (categoriesRes.data ?? []) as unknown as Category[],
     items: ((itemsRes.data ?? []) as AnyRecord[]).map(mapItem),
   };
 }
@@ -89,25 +106,35 @@ export type CreateOrderResult =
 export async function createOrderSecure(input: CreateOrderInput): Promise<CreateOrderResult> {
   const db = await admin();
 
-  const { data: table } = await db
+  const { data: table, error: tableError } = await db
     .from("restaurant_tables")
     .select("id, name, is_active")
     .eq("qr_token", input.token)
     .maybeSingle();
+  if (tableError) throw tableError;
 
   if (!table) return { ok: false, reason: "invalid_table" };
   if (!table.is_active) return { ok: false, reason: "inactive_table" };
 
+  const { data: restaurant, error: restaurantError } = await db
+    .from("restaurant")
+    .select("is_active")
+    .limit(1)
+    .maybeSingle();
+  if (restaurantError) throw restaurantError;
+  if (!restaurant || !restaurant.is_active) return { ok: false, reason: "inactive_table" };
+
   const wanted = input.items.filter((i) => i.quantity > 0);
   if (wanted.length === 0) return { ok: false, reason: "empty_cart" };
 
-  const { data: rows } = await db
+  const { data: rows, error: itemsError } = await db
     .from("menu_items")
     .select("id, name, price, is_available")
     .in(
       "id",
       wanted.map((i) => i.menuItemId),
     );
+  if (itemsError) throw itemsError;
 
   const byId = new Map((rows ?? []).map((r) => [r.id, r]));
   const unavailable: string[] = [];
@@ -139,11 +166,12 @@ export async function createOrderSecure(input: CreateOrderInput): Promise<Create
 
   const subtotal = Number(items.reduce((sum, i) => sum + i.subtotal, 0).toFixed(2));
 
-  const { data: settings } = await db
+  const { data: settings, error: settingsError } = await db
     .from("restaurant")
     .select("tax_rate")
     .limit(1)
     .maybeSingle();
+  if (settingsError) throw settingsError;
 
   const taxRate = Math.max(0, Math.min(50, Number(settings?.tax_rate ?? 0)));
   const taxAmount = Number(((subtotal * taxRate) / 100).toFixed(2));
@@ -185,11 +213,12 @@ export async function createOrderSecure(input: CreateOrderInput): Promise<Create
 
 export async function loadPublicOrder(orderId: string): Promise<Order | null> {
   const db = await admin();
-  const { data } = await db
+  const { data, error } = await db
     .from("orders")
     .select("*, restaurant_tables(name, qr_token)")
     .eq("id", orderId)
     .maybeSingle();
+  if (error) throw error;
   if (!data) return null;
   const rel = (data as AnyRecord)["restaurant_tables"] as { name?: string } | null;
   return mapOrder(data as AnyRecord, rel?.name ?? null);
@@ -197,19 +226,21 @@ export async function loadPublicOrder(orderId: string): Promise<Order | null> {
 
 export async function loadTableOrders(token: string, sessionId: string): Promise<Order[]> {
   const db = await admin();
-  const { data: table } = await db
+  const { data: table, error: tableError } = await db
     .from("restaurant_tables")
     .select("id, name")
     .eq("qr_token", token)
     .maybeSingle();
+  if (tableError) throw tableError;
   if (!table) return [];
-  const { data } = await db
+  const { data, error } = await db
     .from("orders")
     .select("*")
     .eq("table_id", table.id)
     .eq("session_id", sessionId)
     .order("created_at", { ascending: false })
     .limit(10);
+  if (error) throw error;
   return ((data ?? []) as AnyRecord[]).map((row) => mapOrder(row, table.name));
 }
 

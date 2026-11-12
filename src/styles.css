@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * THE COFFEE DOSE — design system
- * Warm café surfaces · espresso ink · editorial typography · caramel and terracotta accents.
+ * TableScan design system
+ * Neutral defaults are overridden by the restaurant theme stored in Supabase.
  *
  * Semantic tokens only. Never hardcode colors in components.
  */
@@ -71,41 +71,41 @@
   --radius: 1rem;
 
   /* Surfaces */
-  --background: #F4EBDD;
-  --surface: #EDE1D0;
-  --card: #FFFAF2;
-  --elevated: #F8F0E6;
-  --popover: #FFFAF2;
-  --secondary: #EADBC8;
-  --muted: #EFE3D3;
+  --background: #F8FAFC;
+  --surface: #F1F5F9;
+  --card: #FFFFFF;
+  --elevated: #F8FAFC;
+  --popover: #FFFFFF;
+  --secondary: #E2E8F0;
+  --muted: #F1F5F9;
 
   /* Type */
-  --foreground: #281812;
-  --card-foreground: #281812;
-  --popover-foreground: #281812;
-  --secondary-foreground: #281812;
-  --muted-foreground: #715B4E;
-  --subtle: #907A6B;
+  --foreground: #0F172A;
+  --card-foreground: #0F172A;
+  --popover-foreground: #0F172A;
+  --secondary-foreground: #0F172A;
+  --muted-foreground: #475569;
+  --subtle: #64748B;
 
-  /* Coffee Dose palette from the brand concept PRD */
-  --primary: #C7844B;
-  --primary-foreground: #281812;
-  --accent: #C55E43;
-  --accent-foreground: #FFFAF2;
-  --leaf: #4A2B20;
-  --leaf-foreground: #F4EBDD;
+  /* Neutral defaults; restaurant-specific values are applied at runtime. */
+  --primary: #334155;
+  --primary-foreground: #0F172A;
+  --accent: #0F766E;
+  --accent-foreground: #FFFFFF;
+  --leaf: #1E293B;
+  --leaf-foreground: #F8FAFC;
 
   /* Feedback */
-  --destructive: #B84D38;
-  --destructive-foreground: #FFFAF2;
-  --success: #47744B;
-  --success-foreground: #FFFAF2;
-  --warning: #986321;
+  --destructive: #B91C1C;
+  --destructive-foreground: #FFFFFF;
+  --success: #15803D;
+  --success-foreground: #FFFFFF;
+  --warning: #A16207;
 
   /* Lines */
   --border: rgba(40, 24, 18, 0.14);
   --input: rgba(40, 24, 18, 0.20);
-  --ring: #C7844B;
+  --ring: #334155;
 
   --glass: rgba(255, 250, 242, 0.82);
   --glass-strong: rgba(244, 235, 221, 0.96);
@@ -116,24 +116,24 @@
   --font-display: "Playfair Display", ui-serif, Georgia, serif;
   --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
 
-  --chart-1: #C7844B;
-  --chart-2: #C55E43;
-  --chart-3: #4A2B20;
-  --chart-4: #D9A66F;
-  --chart-5: #8F5134;
+  --chart-1: #334155;
+  --chart-2: #0F766E;
+  --chart-3: #1E293B;
+  --chart-4: #64748B;
+  --chart-5: #0F766E;
 
-  --sidebar: #EDE1D0;
-  --sidebar-foreground: #281812;
-  --sidebar-primary: #C7844B;
-  --sidebar-primary-foreground: #281812;
-  --sidebar-accent: #EADBC8;
-  --sidebar-accent-foreground: #281812;
+  --sidebar: #F1F5F9;
+  --sidebar-foreground: #0F172A;
+  --sidebar-primary: #334155;
+  --sidebar-primary-foreground: #0F172A;
+  --sidebar-accent: #E2E8F0;
+  --sidebar-accent-foreground: #0F172A;
   --sidebar-border: rgba(40, 24, 18, 0.14);
-  --sidebar-ring: #C7844B;
+  --sidebar-ring: #334155;
 }
 
 .dark {
-  /* Coffee Dose uses the warm light palette across customer and staff screens. */
+  /* Restaurant themes are applied by the customer brand provider. */
   color-scheme: light;
 }
 
@@ -177,7 +177,7 @@
   }
 }
 
-/* Soft café glass — reserved for floating UI, never for every card. */
+/* Soft glass — reserved for floating UI, never for every card. */
 @utility glass {
   background: var(--glass);
   border: 1px solid var(--glass-border);

@@ -31,11 +31,12 @@ function AnalyticsPage() {
   const scoped = orders.filter(
     (o) => new Date(o.created_at).getTime() >= since && o.status !== "CANCELLED",
   );
-  const revenue = scoped.reduce((sum, o) => sum + o.total, 0);
-  const avg = scoped.length ? revenue / scoped.length : 0;
+  const paidOrders = scoped.filter((o) => o.payment_status === "PAID");
+  const revenue = paidOrders.reduce((sum, o) => sum + o.total, 0);
+  const avg = paidOrders.length ? revenue / paidOrders.length : 0;
 
-  const menuViews = events.filter((e) => e.event_type === "MENU_VIEW").length;
-  const itemViews = events.filter((e) => e.event_type === "ITEM_VIEW").length;
+  const menuViews = events.filter((e) => e.event_type === "menu_view").length;
+  const itemViews = events.filter((e) => e.event_type === "item_view").length;
 
   const itemCounts = new Map<string, { name: string; qty: number; revenue: number }>();
   for (const order of scoped) {
@@ -57,7 +58,7 @@ function AnalyticsPage() {
   const tableTotals = tables
     .map((t) => ({
       name: t.name,
-      total: scoped.filter((o) => o.table_id === t.id).reduce((s, o) => s + o.total, 0),
+      total: scoped.filter((o) => o.table_id === t.id && o.payment_status === "PAID").reduce((s, o) => s + o.total, 0),
       orders: scoped.filter((o) => o.table_id === t.id).length,
     }))
     .sort((a, b) => b.total - a.total);

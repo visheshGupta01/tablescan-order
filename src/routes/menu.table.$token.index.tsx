@@ -16,22 +16,19 @@ import { CustomerMessage, MenuSkeleton } from "@/components/customer/MenuSkeleto
 import { CUSTOMER_STATUS_LABEL, type MenuItem } from "@/types";
 import { formatCurrency } from "@/lib/format";
 import { Button } from "@/components/ui/button";
-import { CafeLogo, TableIndicator } from "@/components/cafe/CafeBrand";
-import { ImagePlaceholder } from "@/components/cafe/ImagePlaceholder";
-import { ArrowDown, Coffee, CupSoda, UtensilsCrossed } from "lucide-react";
 
 export const Route = createFileRoute("/menu/table/$token/")({
   head: () => ({
     meta: [
-      { title: "Your First Dose — The Coffee Dose" },
+      { title: "Digital Menu | TableScan" },
       {
         name: "description",
-        content: "Explore The Coffee Dose menu and order directly from your table in Bidholi, Dehradun.",
+        content: "Browse the restaurant menu and order directly from your table.",
       },
-      { property: "og:title", content: "Your First Dose — The Coffee Dose" },
+      { property: "og:title", content: "Digital Menu | TableScan" },
       {
         property: "og:description",
-        content: "Your table, your order, your dose of The Coffee Dose in Bidholi, Dehradun.",
+        content: "View the live menu, check availability and place your order.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -101,7 +98,15 @@ function MenuPage() {
     return <CustomerMessage title="Table Unavailable" message="This table is currently unavailable." />;
   }
 
-  const restaurant = data.restaurant!;
+  if (data.status === "inactive_restaurant") {
+    return <CustomerMessage title="Ordering Unavailable" message="This restaurant is not currently accepting orders." />;
+  }
+
+  if (data.status === "unconfigured" || !data.restaurant) {
+    return <CustomerMessage title="Menu not configured" message="The restaurant profile has not been set up yet. Please contact the restaurant staff." />;
+  }
+
+  const restaurant = data.restaurant;
   const table = data.table!;
   const featured = data.items.filter((i) => i.is_featured && i.is_available);
   const visibleCategories = data.categories.filter((c) =>
@@ -121,20 +126,15 @@ function MenuPage() {
 
   const countFor = (id: string) => cart.items.find((l) => l.menuItemId === id)?.quantity ?? 0;
 
-  const chooseDose = (term: "coffee" | "food" | "drinks") => {
+  const chooseCategory = (categoryId: string) => {
     setQuery("");
-    const categoryQuery = term === "drinks" ? "beverage" : term;
-    const category = term === "food"
-      ? undefined
-      : data?.categories.find((item) => item.name.toLowerCase().includes(categoryQuery));
-    if (category) {
-      setActiveCategory(category.id);
-      track("category_view", { categoryId: category.id });
-      document.getElementById(`cat-${category.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setActiveCategory(categoryId);
+    if (categoryId === "all") {
+      document.getElementById("full-menu")?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
-    setActiveCategory("all");
-    document.getElementById("full-menu")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    track("category_view", { categoryId });
+    document.getElementById(`cat-${categoryId}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const activeOrders = (orders.data ?? []).filter(
@@ -144,95 +144,33 @@ function MenuPage() {
   return (
     <BrandProvider theme={restaurant.theme} template={restaurant.template}>
       <div className="pb-24">
-        <section className="mx-auto max-w-lg px-5 pb-8 pt-8 sm:pt-12">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex min-w-0 items-center gap-3">
-              <CafeLogo name="The Coffee Dose" className="size-11" />
-              <div className="min-w-0">
-                <p className="dose-label truncate text-foreground">The Coffee Dose</p>
-                <p className="mt-1 text-xs text-muted-foreground">Bidholi · Dehradun</p>
-              </div>
-            </div>
-            <TableIndicator tableName={table.name} />
-          </div>
-
-          <div className="mt-9 animate-rise">
-            <p className="dose-label text-primary">FIRST DOSE</p>
-            <h1 className="editorial mt-3 text-5xl leading-[0.98] text-foreground sm:text-6xl">
-              YOUR DAILY<br />DOSE OF GOODNESS.
-            </h1>
-            <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
-              Good coffee, good food, and a little more time together.
+        <div className="mx-auto max-w-3xl pb-8">
+          <RestaurantHero restaurant={restaurant} tableName={table.name} />
+          <section className="px-4 pt-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Explore
             </p>
-          </div>
-
-          <div className="mt-7 overflow-hidden rounded-xl border border-border">
-            <ImagePlaceholder
-              alt="The Coffee Dose café interior photo placeholder"
-              label="CAFE INTERIOR IMAGE PLACEHOLDER"
-              aspectRatio="16/10"
-              rounded="rounded-xl"
-              eager
-            />
-          </div>
-
-          <div className="mt-7">
-            <p className="dose-label text-muted-foreground">START HERE</p>
-            <h2 className="mt-2 font-display text-2xl text-foreground">What’s your dose?</h2>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => chooseDose("coffee")}
-                className="col-span-2 h-auto min-h-24 justify-between rounded-lg border-primary/30 bg-card p-4 text-left hover:bg-elevated"
-              >
-                <span className="flex items-center gap-4">
-                  <span className="grid size-12 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
-                    <Coffee className="size-5" aria-hidden />
-                  </span>
-                  <span>
-                    <span className="dose-label block text-foreground">COFFEE</span>
-                    <span className="mt-1 block whitespace-normal text-sm font-normal text-muted-foreground">
-                      Start with a little ritual
-                    </span>
-                  </span>
-                </span>
-                <ArrowDown className="size-4 shrink-0 text-primary" aria-hidden />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => chooseDose("food")}
-                className="h-auto min-h-24 flex-col items-start justify-between rounded-lg border-border bg-card p-4 text-left hover:bg-elevated"
-              >
-                <UtensilsCrossed className="size-5 text-primary" aria-hidden />
-                <span>
-                  <span className="dose-label block text-foreground">FOOD</span>
-                  <span className="mt-1 block whitespace-normal text-xs font-normal text-muted-foreground">
-                    Find your favourite
-                  </span>
-                </span>
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => chooseDose("drinks")}
-                className="h-auto min-h-24 flex-col items-start justify-between rounded-lg border-border bg-card p-4 text-left hover:bg-elevated"
-              >
-                <CupSoda className="size-5 text-primary" aria-hidden />
-                <span>
-                  <span className="dose-label block text-foreground">DRINKS</span>
-                  <span className="mt-1 block whitespace-normal text-xs font-normal text-muted-foreground">
-                    Something refreshing
-                  </span>
-                </span>
-              </Button>
-            </div>
-            <Button asChild className="mt-4 h-12 w-full rounded-lg text-sm font-semibold">
-              <a href="#full-menu">VIEW FULL MENU</a>
-            </Button>
-          </div>
-        </section>
+            <h2 className="mt-2 text-2xl font-semibold">Browse the menu</h2>
+            {data.categories.length > 0 ? (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {data.categories.slice(0, 6).map((category) => (
+                  <Button
+                    key={category.id}
+                    type="button"
+                    variant="outline"
+                    onClick={() => chooseCategory(category.id)}
+                  >
+                    {category.name}
+                  </Button>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-2 text-sm text-muted-foreground">
+                Menu categories have not been added yet.
+              </p>
+            )}
+          </section>
+        </div>
 
         {activeOrders.length > 0 ? (
           <div className="mx-auto mt-4 max-w-3xl px-4">
@@ -260,14 +198,7 @@ function MenuPage() {
             activeCategory={activeCategory}
             onCategorySelect={(id) => {
               setActiveCategory(id);
-              if (id === "all") {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                return;
-              }
-              track("category_view", { categoryId: id });
-              document
-                .getElementById(`cat-${id}`)
-                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              chooseCategory(id);
             }}
           />
         </div>

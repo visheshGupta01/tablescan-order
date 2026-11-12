@@ -157,7 +157,7 @@ export interface CartState {
   items: CartLine[];
 }
 
-export type MenuLoadStatus = "ok" | "invalid" | "inactive";
+export type MenuLoadStatus = "ok" | "invalid" | "inactive" | "unconfigured" | "inactive_restaurant";
 
 export interface PublicMenuPayload {
   status: MenuLoadStatus;

@@ -28,7 +28,7 @@ function DashboardPage() {
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
   const today = orders.filter((o) => new Date(o.created_at) >= startOfDay);
-  const paid = today.filter((o) => o.status !== "CANCELLED");
+  const paid = today.filter((o) => o.status !== "CANCELLED" && o.payment_status === "PAID");
   const revenue = paid.reduce((sum, o) => sum + o.total, 0);
   const active = orders.filter(
     (o) => o.status !== "COMPLETED" && o.status !== "CANCELLED",
