@@ -87,7 +87,7 @@ function SettingsPage() {
   const setDay = (key: string, patch: Partial<{ open: string; close: string; closed: boolean }>) => {
     setHours((prev) => ({
       ...prev,
-      [key]: { open: "09:00", close: "22:00", ...(prev[key] ?? {}), ...patch },
+      [key]: { open: prev[key]?.open ?? "", close: prev[key]?.close ?? "", ...(prev[key] ?? {}), ...patch },
     }));
   };
 
@@ -175,14 +175,14 @@ function SettingsPage() {
                 <Input
                   type="time"
                   className="w-28"
-                  value={value?.open ?? "09:00"}
+                  value={value?.open ?? ""}
                   disabled={closed}
                   onChange={(e) => setDay(day.key, { open: e.target.value })}
                 />
                 <Input
                   type="time"
                   className="w-28"
-                  value={value?.close ?? "22:00"}
+                  value={value?.close ?? ""}
                   disabled={closed}
                   onChange={(e) => setDay(day.key, { close: e.target.value })}
                 />
