@@ -35,10 +35,10 @@ import {
 export const Route = createFileRoute("/_authenticated/admin/menu")({
   head: () => ({
     meta: [
-      { title: "Menu Items — Coffee Dose Staff Console" },
+      { title: "Menu Items — Staff Console" },
       { name: "description", content: "Add, edit, price and toggle availability of menu items." },
-      { property: "og:title", content: "Menu Items — Coffee Dose Staff Console" },
-      { property: "og:description", content: "Manage The Coffee Dose digital menu." },
+      { property: "og:title", content: "Menu Items — Staff Console" },
+      { property: "og:description", content: "Manage the restaurant digital menu." },
       { name: "robots", content: "noindex" },
     ],
   }),
